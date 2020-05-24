@@ -44,7 +44,7 @@
       <p>In Python, we construct a dictionary where the keys are the unique numbers in <code
           class="inline-code">nums</code> and the values are the number of times they appear in <code
           class="inline-code">nums</code>. Here's the Python code:</p>
-      <pre>
+      <pre class="prettyprint linenums">
         from collections import Counter
 
         def TwoSum_Hashtable(nums: List[int], target: int) -&gt; List[List[int]]:
@@ -73,10 +73,9 @@
         the higher end <code class="inline-code">hi</code>. If the sum of the two values is greater than zero, then we
         decrement <code class="inline-code">hi</code>. If the sum is smaller then zero, we decrement <code
           class="inline-code">lo</code>. We stop when <code class="inline-code">lo = hi</code>. In code:</p>
-      <pre>
+      <pre class="prettyprint linenums">
         def TwoSum_Pointers(nums: List[int], target: int) -&gt; List[List[int]]:
-	        lo, hi = 0, len(nums) - 1
-	
+          lo, hi = 0, len(nums) - 1
           output = []
           
           while lo &lt; hi:
@@ -116,7 +115,7 @@
       <h3 id="keeping-track-of-counts-2">Keeping track of counts</h3>
       <p>Similar to <code class="inline-code">n = 2</code> but we need to make sure that a repeated element appears at
         least twice before including it in a solution:</p>
-      <pre>
+      <pre class="prettyprint linenums">
         from collections import Counter
 
         def ThreeSum_Hashtable(nums: List[int]) -&gt; List[List[int]:
@@ -150,9 +149,9 @@
           class="inline-code">nums[i]</code> we check if the rest of the array contains a doublet that sums to <code
           class="inline-code">target - nums[i]</code>. To find the doublet, we can use the <code
           class="inline-code">TwoSum_ptrs</code> function from above.</p>
-      <pre>
+      <pre class="prettyprint linenums">
         def ThreeSum_Pointers(nums: List[int], target: int) -&gt; List[List[int]:
-	        sort(nums)
+          nums.sort()
 	
           output = []
           
@@ -209,6 +208,9 @@
     </div>
   </div>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+
 </body>
 
 </html>

@@ -14,6 +14,13 @@ code{
   font-size: .9em;
 }
 
+/* Print line numbers on every line  of code */
+li.L0, li.L1, li.L2, li.L3,
+li.L5, li.L6, li.L7, li.L8 {
+  list-style-type: decimal !important;
+}
+
+
 /* Header/Blog Title */
 .header {
   font-size: 20px;
