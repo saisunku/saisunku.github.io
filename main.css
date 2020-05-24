@@ -1,0 +1,48 @@
+﻿body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 0px;
+  background: #ffffff;
+}
+
+code{
+  border: 1px solid rgb(220, 220, 220);
+  background-color: rgb(243, 243, 243);
+  padding-right: .2em;
+  padding-left: .2em;
+  border-radius: .25em;
+  color: rgb(0,0,0);
+  font-size: .9em;
+}
+
+/* Header/Blog Title */
+.header {
+  font-size: 20px;
+  text-align: center;
+  background: white;
+}
+
+/* Text box with white background */
+.textbox {
+  background-color: #ffffff;
+  width: auto;
+  padding: 10px;
+}
+
+.card, .projectcard {
+  padding: 10px;
+  margin: 0 auto;
+  width: 60%;
+}
+
+.projectcard {
+  width: 100%;
+}
+
+/* Footer
+.footer {
+  padding: 20px;
+  text-align: center;
+  background: #ddd;
+  margin-top: 20px;
+}
+*/

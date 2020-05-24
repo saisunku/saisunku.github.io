@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+  <link rel="stylesheet" href="main.css" />
+  <link rel="shortcut icon" href="favicon.png" />
+  <title>Sai Sunku</title>
+</head>
+
+<body>
+  <div class="header">
+    <h2><a href=index.html>Sai Sunku</a></h2>
+    <a href="https://github.com/saisunku/">GitHub</a> |
+    <a href="https://www.linkedin.com/in/saisunku/">LinkedIn</a> |
+    <a href=blog.html>Blog</a>
+  </div>
+
+  <div class="card">
+    <h1>nSum</h1>
+    <h5>Date posted: 5/22/2020</h5>
+    <div class="textbox">
+      <p>A set of popular algorithms problems deal with the following question: given an array of <code
+          class="inline-code">N</code> numbers called <code class="inline-code">nums</code>, find all unique subsets of
+        <code class="inline-code">n</code> numbers (<code class="inline-code">n &lt;= N</code>) that add up to a given
+        target value <code class="inline-code">target</code>.</p>
+      <p>The problem for an arbitrary target value can be reduced to the problem with zero as the target simply by
+        subtracting <code class="inline-code">sum / n</code> from all the elements in <code
+          class="inline-code">nums</code>. But we consider the general case here.</p>
+
+
+      <h2 id="n-2-2-sum">n = 2 (2 Sum)</h2>
+      <p>Let's start with <code class="inline-code">n = 2</code>. There are two main approaches one can use:</p>
+      <ol>
+        <li>Keeping track of counts</li>
+        <li>Two pointers</li>
+      </ol>
+      <p>Let's look at both of them.</p>
+
+      <h3 id="keeping-track-of-counts">Keeping track of counts</h3>
+      <p>We first keep track of how many times each unique number appears in the list. Then we iterate over the array
+        and check if the complimentary number is also present.</p>
+      <p>In Python, we construct a dictionary where the keys are the unique numbers in <code
+          class="inline-code">nums</code> and the values are the number of times they appear in <code
+          class="inline-code">nums</code>. Here's the Python code:</p>
+      <pre>
+        from collections import Counter
+
+        def TwoSum_Hashtable(nums: List[int], target: int) -&gt; List[List[int]]:
+          counts = Counter(nums)
+          
+          output = []
+          
+          for num in nums:
+            other_num = target - num
+            if other_num == num and counts[num] &gt; 1:
+              output.append([num, num])
+            
+            elif other_num &gt; num and counts[other_num] &gt; 0:
+              output.append([num, target - num])
+              
+          return output
+      </pre>
+      <p>The time complexity is <code class="inline-code">O(N)</code> because we iterate over the array twice (once to
+        construct the counts array and a second time to check for the sum). The space complexity is <code
+          class="inline-code">O(N)</code> because in the worst case of all elements being unique, our hash table will
+        have <code class="inline-code">N</code> entries.</p>
+
+      <h3 id="two-pointers">Two pointers</h3>
+      <p>This approach requires that the list of numbers is sorted.</p>
+      <p>We start with two pointers: one at the lower end of the array <code class="inline-code">lo</code> and one at
+        the higher end <code class="inline-code">hi</code>. If the sum of the two values is greater than zero, then we
+        decrement <code class="inline-code">hi</code>. If the sum is smaller then zero, we decrement <code
+          class="inline-code">lo</code>. We stop when <code class="inline-code">lo = hi</code>. In code:</p>
+      <pre>
+        def TwoSum_Pointers(nums: List[int], target: int) -&gt; List[List[int]]:
+	        lo, hi = 0, len(nums) - 1
+	
+          output = []
+          
+          while lo &lt; hi:
+            cur_sum = nums[lo] + nums[hi]
+
+            if cur_sum == target:
+              if len(output) &gt; 0 and nums[hi] != output[-1][1]:
+                # Ensures that only unique solutions are added to the output
+                output.append([nums[lo], nums[hi]])
+              lo += 1
+            elif cur_sum &lt; target:
+              lo += 1
+            else:
+              hi -= 1
+              
+          return output
+      </pre>
+      <p>If we start with an unsorted list, the time complexity is limited by the sorting operation, so the runtime
+        would be <code class="inline-code">O(N lg(N))</code>. But if a linear-time sort like bucket sort can be used,
+        the runtime would be <code class="inline-code">O(N)</code>. The space complexity is <code
+          class="inline-code">O(1)</code> since the additional space we use is only two pointers.</p>
+
+
+      <h2 id="n-3-3-sum">n = 3 (3 Sum)</h2>
+      <p>For <code class="inline-code">n = 3</code> things get a bit more intersting. The major difference between <code
+          class="inline-code">n = 2</code> and <code class="inline-code">n = 3</code> is that two numbers can't sum to
+        zero unless they're both zero. So for <code class="inline-code">n = 2</code>, we could pretend that all numbers
+        appear in the list just once even if they actually appeared more than once. But for <code
+          class="inline-code">n = 3</code>, two identical numbers together with a third number <em>can</em> sum to zero.
+        So we need to keep track of how many times we use a given number to form the triplet in the output.</p>
+
+        <p>The time complexity with this approach would be <code class="inline-code">O(N^2)</code>.
+        In fact, it's an <a href="https://en.wikipedia.org/wiki/3SUM">open question</a> if 3Sum can 
+        be solved faster than <code class="inline-code">O(N^2)</code></p>
+        
+        Let's take a look.</p>
+      <h3 id="keeping-track-of-counts-2">Keeping track of counts</h3>
+      <p>Similar to <code class="inline-code">n = 2</code> but we need to make sure that a repeated element appears at
+        least twice before including it in a solution:</p>
+      <pre>
+        from collections import Counter
+
+        def ThreeSum_Hashtable(nums: List[int]) -&gt; List[List[int]:
+          counts = Counter(nums)
+          keys = sorted(counts.keys())
+            
+            output = []
+            if counts[0] &gt; 2:
+                output.append([0, 0, 0])
+            
+            for idx, i in enumerate(keys):            
+                for j in keys[idx + 1:]:
+                    val = -1 * (i + j)
+                    if val == i or val == j:
+                        if counts[val] &gt; 1:
+                            output.append([i, j, val])
+                    elif val &gt; i and val &gt; j:
+                        if counts[val] &gt; 0:
+                            output.append([i, j, val])
+            
+            return output
+        </pre>
+      <p>Here, while we iterate through the unique elements in a sorted order, we only check for larger numbers. This
+        ensures that only unique solutions are added to the output.
+        The time complexity is <code class="inline-code">O(N^2)</code> since we have two nested <code
+          class="inline-code">for</code> loops. The space complexity is <code class="inline-code">O(N)</code> because of
+        the dictionary that we use.</p>
+
+      <h3 id="two-pointers-2">Two pointers</h3>
+      <p>Here, we first sort the array if it is not already sorted. Then for every element <code
+          class="inline-code">nums[i]</code> we check if the rest of the array contains a doublet that sums to <code
+          class="inline-code">target - nums[i]</code>. To find the doublet, we can use the <code
+          class="inline-code">TwoSum_ptrs</code> function from above.</p>
+      <pre>
+        def ThreeSum_Pointers(nums: List[int], target: int) -&gt; List[List[int]:
+	        sort(nums)
+	
+          output = []
+          
+          for i, num in enumerate(nums):
+            doublets = TwoSum_Pointers(nums[i + 1:], target - nums[i])
+            
+            for doublet in doublets:
+              triplet = doublet.extend([num])
+              output.append(triplet)
+              
+          return output
+      </pre>
+
+      <p>The time complexity is again <code class="inline-code">O(N^2)</code> but the space 
+        complexity is <code class="inline-code">O(1)</code>.</p>
+      
+
+      <h2 id="n-4">n = 4</h2>
+      <p>The same two approaches can be used again. This time the time complexity goes up to <code
+          class="inline-code">O(N^3)</code>.</p>
+      <h3 id="hash-table">Hash table</h3>
+      <p>Similar to <code class="inline-code">n = 2</code> and <code class="inline-code">n = 3</code> but we need to
+        check the counts for repeated elements carefully. We will have three nested loops, which makes the time
+        complexity <code class="inline-code">O(N^3)</code>.</p>
+      <h3 id="two-pointers-3">Two pointers</h3>
+      <p>For each doublet <code class="inline-code">i, j</code> (there are <code class="inline-code">N^2</code> of
+        those), we check the rest of the array for a doublet the sums to <code
+          class="inline-code">- (num[i] + num[j])</code> which takes <code class="inline-code">O(N)</code> time.</p>
+
+
+      <h2 id="n-5">n = 5</h2>
+      <p>Stack Overflow has an <a href="https://stackoverflow.com/questions/37027336/solving-5sum-in-on3-with-strict-memory-limits">interesting post</a> on 
+        solving 5Sum in <code class="inline-code">O(N^3)</code> time.
+
+
+      <h2 id="large-n-n-~-n">Large n (n ~ N)</h2>
+      <p>The problem for a large <code class="inline-code">n</code> that's comparable to <code
+          class="inline-code">N</code> can also be solved in polynomial time simply by inverting the problem. 
+          Instead of solving for a subset of length <code class="inline-code">n</code>, we can solve for a  
+          a subset of length <code class="inline-code">N - n</code> that sums to <code
+          class="inline-code">sum(nums) - target</code>.</p>
+
+      <h2 id="relation-to-subset-sum">Relation to subset sum</h2>
+      <p>A natural extension of these problems is the <a href="https://en.wikipedia.org/wiki/Subset_sum_problem">subset sum problem</a> which asks the following question: given <code
+          class="inline-code">nums</code>, is there a subset of any length whose elements sum up to <code
+          class="inline-code">target</code>? </p>
+          
+        <p>This problem is known to be NP-hard. And based on what we saw above, it's
+        easy to see why. <code class="inline-code">nSum</code> with <code class="inline-code">n = 2</code> could be solved in linear time, but <code
+          class="inline-code">n = 3</code> took <code class="inline-code">O(N^2)</code> and <code
+          class="inline-code">n = 4</code> took <code class="inline-code">O(N^3)</code>. Larger <code
+          class="inline-code">n</code> subsets take more time to search because there are more of them. This continues
+        until we reach <code class="inline-code">n = N/2</code> after which the number of subsets goes down again.</p>
+    </div>
+  </div>
+  </div>
+</body>
+
+</html>
