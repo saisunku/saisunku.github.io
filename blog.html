@@ -18,6 +18,149 @@
   </div>
 
   <div class="card">
+    <h1>Scoping in Python</h1>
+    <h5>Date posted: 5/24/2020</h5>
+    <h2 id="scopes-and-namespaces">Scopes and Namespaces</h2>
+    <p>Python has three namespaces:</p>
+    <ul>
+      <li>local</li>
+      <li>global</li>
+      <li>built-in</li>
+    </ul>
+    <p>Python executes code in blocks. 
+      <a href="https://docs.python.org/3.8/reference/executionmodel.html">Each block is executed as a unit.</a>
+       Variables in the local namespace are those
+      which can only accessed and modified in a given block. They go &quot;out of scope&quot; in future blocks.</p>
+    <p>The global namespace is the module-level namespace. All variables defined outside of a function or a class go in
+      the global namespace.</p>
+    <p>Finally, the built-in namespace contains the built-in Python functions that are always accessible, exceptions and
+      a few constants.</p>
+    <p>You can check which variables are in each namespace in the following way:</p>
+    <ul>
+      <li>local: <code class="inline-code">locals()</code> - returns a dictionary of local variables and their values
+      </li>
+      <li>global: <code class="inline-code">globals()</code> - returns a dictionary of global variables and their values
+      </li>
+      <li>built-in: <code class="inline-code">import builtins; builtins.__dir__()</code> - returns a list of variables
+        in the built-in namespace</li>
+    </ul>
+
+    <h2 id="resolving-a-name">Resolving a name</h2>
+    <p>When you access a variable in Python, it will first search the local namespace, then the local namespaces of any
+      enclosing functions or classes, then the global namespace and finally the builtin namespace. This leads to the
+      so-called LEGB rule.</p>
+
+    <h2 id="assigning-to-variables-in-a-different-namespace">Assigning to variables in a different namespace</h2>
+    <p>Read access to variables in the global namespace is always allowed because there is never any ambiguity. Either a
+      variable is in the global namespace and we can access it or it isn't (in which case Python will search the
+      builtins namespace).</p>
+    <p>But assignment can be ambigious. If, inside a function, you assign to a variable that has the same name as a
+      global variable, it's unclear whether you want to assign to the local variable or to the global one. Python
+      resolves this ambiguity by always assigning to a local variable. But assignment to the global variable is possible
+      with the <code class="inline-code">global</code> keyword.</p>
+    <p>Example:</p>
+    <pre class="prettyprint linenums">
+      a = 2   # global variable
+
+      def foo():
+        global a
+        a += 2
+        
+      foo()
+      print(a)
+    </pre>
+    <p>This code will run and print <code class="inline-code">4</code>.</p>
+
+    <p>Intersting things happen in nested functions. A variable defined in the outer function is not considered a local
+      variable in the inner function. But it is possible to assign to the variable in the outer function using the <code
+        class="inline-code">nonlocal</code> keyword. <code class="inline-code">nonlocal</code> works in a very similar
+      way to <code class="inline-code">global</code> but only deals with variables in enclosing functions. As with <code
+        class="inline-code">global</code>, using the keyword is only necessary to assign to the variable. Accessing is
+      always allowed.</p>
+    <pre class="prettyprint linenums">
+      def foo():
+        a = 2
+    
+        def bar():
+            nonlocal a
+            a += 2
+            
+        bar()
+        print(a)
+    
+      foo()
+    </pre>
+    
+    This code also runs and prints <code class="inline-code">4</code>. 
+    But it will raise an <code class="inline-code">UnboundLocalError</code> if line 5 is ommitted.
+
+    <p>Modifying a mutable object (e.g., setting attributes of a class or appending to a list) does not require
+      reassignment, so <code class="inline-code">nonlocal</code> is not necessary in such cases.</p>
+    <p>Example with attribute update:</p>
+    <pre class="prettyprint linenums">
+      class dummy():
+        pass
+
+      def foo():
+          d = dummy()
+          d.a = 2
+
+          def bar():
+              d.a += 2
+
+          bar()
+          print(d.a)
+
+      foo()
+      </pre>
+
+    Runs and prints <code class="inline-code">4</code>
+
+    <p>Example with appending to a list:</p>
+    <pre class="prettyprint linenums">
+      def foo():
+        a = [1]
+
+        def bar():
+          a.append(2)
+
+        bar()
+        print(a)
+
+      foo()
+    </pre>
+
+    Runs and prints <code class="inline-code">[1, 2]</code>
+    
+
+    <p>Finally, the fact that Python executes code in blocks leads to some interesting effects.</p>
+    <pre class="prettyprint linenums">
+      def foo():
+        a = 2
+	
+        def bar():
+          print(locals())
+          nonlocal a
+	
+        bar()
+	
+      foo()
+    </pre>
+
+    <p>The above code with print <code class="inline-code">{'a', 2}</code> despite the fact that the <code
+        class="inline-code">nonlocal a</code> statement occurs after the <code
+        class="inline-code">print(locals())</code> statement. However, if you try to assign to <code
+        class="inline-code">a</code> before the <code class="inline-code">nonlocal a</code> statement, you'll get an
+      <code class="inline-code">UnboundLocalError</code>.</p>
+
+    <p>The <a href="https://docs.python.org/3.8/reference/executionmodel.html">Python documentation</a> 
+      on this topic as well as <a href="https://www.python.org/dev/peps/pep-3104/">PEP 3104</a> 
+      which introduced the <code class="inline-code">nonlocal</code> keyword are good sources for more information.
+    </p>
+  </div>
+
+
+  <div class="card">
     <h1>nSum</h1>
     <h5>Date posted: 5/22/2020</h5>
     <div class="textbox">
@@ -82,7 +225,7 @@
             cur_sum = nums[lo] + nums[hi]
 
             if cur_sum == target:
-              if len(output) &gt; 0 and nums[hi] != output[-1][1]:
+              if len(output) == 0 or (len(output) &gt; 0 and nums[hi] != output[-1][1]):
                 # Ensures that only unique solutions are added to the output
                 output.append([nums[lo], nums[hi]])
               lo += 1
@@ -107,11 +250,11 @@
           class="inline-code">n = 3</code>, two identical numbers together with a third number <em>can</em> sum to zero.
         So we need to keep track of how many times we use a given number to form the triplet in the output.</p>
 
-        <p>The time complexity with this approach would be <code class="inline-code">O(N^2)</code>.
-        In fact, it's an <a href="https://en.wikipedia.org/wiki/3SUM">open question</a> if 3Sum can 
+      <p>The time complexity with this approach would be <code class="inline-code">O(N^2)</code>.
+        In fact, it's an <a href="https://en.wikipedia.org/wiki/3SUM">open question</a> if 3Sum can
         be solved faster than <code class="inline-code">O(N^2)</code></p>
-        
-        Let's take a look.</p>
+
+      Let's take a look.</p>
       <h3 id="keeping-track-of-counts-2">Keeping track of counts</h3>
       <p>Similar to <code class="inline-code">n = 2</code> but we need to make sure that a repeated element appears at
         least twice before including it in a solution:</p>
@@ -159,15 +302,15 @@
             doublets = TwoSum_Pointers(nums[i + 1:], target - nums[i])
             
             for doublet in doublets:
-              triplet = doublet.extend([num])
+              triplet = [num] + doublet
               output.append(triplet)
               
           return output
       </pre>
 
-      <p>The time complexity is again <code class="inline-code">O(N^2)</code> but the space 
+      <p>The time complexity is again <code class="inline-code">O(N^2)</code> but the space
         complexity is <code class="inline-code">O(1)</code>.</p>
-      
+
 
       <h2 id="n-4">n = 4</h2>
       <p>The same two approaches can be used again. This time the time complexity goes up to <code
@@ -183,26 +326,28 @@
 
 
       <h2 id="n-5">n = 5</h2>
-      <p>Stack Overflow has an <a href="https://stackoverflow.com/questions/37027336/solving-5sum-in-on3-with-strict-memory-limits">interesting post</a> on 
+      <p>Stack Overflow has an <a
+          href="https://stackoverflow.com/questions/37027336/solving-5sum-in-on3-with-strict-memory-limits">interesting
+          post</a> on
         solving 5Sum in <code class="inline-code">O(N^3)</code> time.
 
 
       <h2 id="large-n-n-~-n">Large n (n ~ N)</h2>
       <p>The problem for a large <code class="inline-code">n</code> that's comparable to <code
-          class="inline-code">N</code> can also be solved in polynomial time simply by inverting the problem. 
-          Instead of solving for a subset of length <code class="inline-code">n</code>, we can solve for a  
-          a subset of length <code class="inline-code">N - n</code> that sums to <code
+          class="inline-code">N</code> can also be solved in polynomial time simply by inverting the problem.
+        Instead of solving for a subset of length <code class="inline-code">n</code>, we can solve for a
+        a subset of length <code class="inline-code">N - n</code> that sums to <code
           class="inline-code">sum(nums) - target</code>.</p>
 
       <h2 id="relation-to-subset-sum">Relation to subset sum</h2>
-      <p>A natural extension of these problems is the <a href="https://en.wikipedia.org/wiki/Subset_sum_problem">subset sum problem</a> which asks the following question: given <code
-          class="inline-code">nums</code>, is there a subset of any length whose elements sum up to <code
-          class="inline-code">target</code>? </p>
-          
-        <p>This problem is known to be NP-hard. And based on what we saw above, it's
-        easy to see why. <code class="inline-code">nSum</code> with <code class="inline-code">n = 2</code> could be solved in linear time, but <code
-          class="inline-code">n = 3</code> took <code class="inline-code">O(N^2)</code> and <code
-          class="inline-code">n = 4</code> took <code class="inline-code">O(N^3)</code>. Larger <code
+      <p>A natural extension of these problems is the <a href="https://en.wikipedia.org/wiki/Subset_sum_problem">subset
+          sum problem</a> which asks the following question: given <code class="inline-code">nums</code>, is there a
+        subset of any length whose elements sum up to <code class="inline-code">target</code>? </p>
+
+      <p>This problem is known to be NP-hard. And based on what we saw above, it's
+        easy to see why. <code class="inline-code">nSum</code> with <code class="inline-code">n = 2</code> could be
+        solved in linear time, but <code class="inline-code">n = 3</code> took <code class="inline-code">O(N^2)</code>
+        and <code class="inline-code">n = 4</code> took <code class="inline-code">O(N^3)</code>. Larger <code
           class="inline-code">n</code> subsets take more time to search because there are more of them. This continues
         until we reach <code class="inline-code">n = N/2</code> after which the number of subsets goes down again.</p>
     </div>
