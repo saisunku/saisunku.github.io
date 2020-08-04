@@ -35,14 +35,24 @@ li.L5, li.L6, li.L7, li.L8 {
   padding: 10px;
 }
 
-.card, .projectcard {
+.card {
   padding: 10px;
   margin: 0 auto;
   width: 60%;
 }
 
 .projectcard {
-  width: 100%;
+  width: 100% !important;
+}
+
+.toccard {
+  float: right;
+  width: 20% !important;
+}
+
+.blogcard {
+  float: left;
+  width: 70% !important;
 }
 
 /* Footer

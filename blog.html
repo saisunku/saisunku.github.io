@@ -17,7 +17,66 @@
     <a href=blog.html>Blog</a>
   </div>
 
-  <div class="card">
+<div class="card">
+
+  <div class="toccard">
+    <h1>Contents</h1>
+  <ul>
+    <li><a href="#discontinous-slicing">Discontinous slicing</a></li>
+    <li><a href="#scoping">Scoping in Python</a></li>
+    <li><a href="#nsum">nSum</a></li>
+    </ul>
+  </div>
+
+  <div class="blogcard" id="discontinous-slicing">
+    <h1>Discontinous slicing in Python</h1>
+    <h5>Date posted: 8/3/2020</h5>
+      <p>Often when working with arrays, we want to access a subset of the elements. Python's slicing notation makes this very easy in most cases:</p>
+
+      <pre class="prettyprint linenums">
+      arr = list(range(10))	# arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+      print(arr[4:9])		# prints [4, 5, 6, 7, 8] - the second number in the slice is the first index that won't be included
+
+      print(arr[::3])		# prints [0, 3, 6, 9]
+
+      print(arr[:5:3])	    # prints [0, 3]
+      </pre>
+
+      <p>But sometimes we want a subset where the elements are not contiguous and are not equally spaced. Python's list comprehension is one way to do this</p>
+
+      <pre class="prettyprint linenums">
+      arr_sliced = [arr[idx] for idx in [1, 4, 9]]
+
+      print(arr_sliced)		# prints [1, 4, 9]
+      </pre>
+
+      <p>But if we want the same subset for multiple arrays, then doing list comprehension repeatedly gets cumbersome. The `itemgetter` method in the `operator` module is perfect for such cases:</p>
+
+      <pre class="prettyprint linenums">
+      from operator import itemgetter
+
+      getter = itemgetter(1, 4, 9)
+
+      arr_sliced = getter(arr)
+
+      print(arr_sliced)		# prints [1, 4, 9]
+      </pre>
+
+      <p>The <code class="inline-code">itemgetter</code> method uses the <code class="inline-code">__getitem__()</code> method which is supported by all iterables. So Numpy arrays work too:</p>
+
+      <pre class="prettyprint linenums">
+      import numpy as np
+
+      arr = np.array(range(10))
+
+      arr_sliced = getter(arr)
+
+      print(arr_sliced)		# prints [1, 4, 9]
+      </pre>
+  </div>
+
+  <div class="blogcard" id="scoping">
     <h1>Scoping in Python</h1>
     <h5>Date posted: 5/24/2020</h5>
     <h2 id="scopes-and-namespaces">Scopes and Namespaces</h2>
@@ -160,7 +219,7 @@
   </div>
 
 
-  <div class="card">
+  <div class="blogcard" id="nsum">
     <h1>nSum</h1>
     <h5>Date posted: 5/22/2020</h5>
     <div class="textbox">
@@ -355,6 +414,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+
+</div>
 
 </body>
 
